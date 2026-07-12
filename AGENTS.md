@@ -53,3 +53,11 @@
 - Avoid using `js/Buffer` in browser related code.
 - Git commits should include a concise summary.
 - When deleting properties in db migration, those properties should be added to `logseq.db-sync.tx-sanitize/migration-deleted-attrs`
+
+## PWA Support (added on `pwa-support` branch)
+- The web app is shipped as a **Single Page Application** from `public/` (built from `static/`). PWA installability lives here, not in the ClojureScript build.
+- `public/index.html` links `manifest.webmanifest` + `theme-color` and registers `/sw.js` on load.
+- `public/manifest.webmanifest` — name/icons/start_url/display=standalone. Icons in `public/icons/` (generated from `resources/img/logo.png`).
+- `public/sw.js` — precaches the app shell, network-first navigations (fallback to cached shell offline), stale-while-revalidate for `/static` and `/icons`. The user graph lives in OPFS (sqlite-wasm) and is **not** routed through the Cache API.
+- Deploy: `.github/workflows/deploy-gh-pages.yml` builds the web target (`pnpm gulp:build && clojure -M:cljs release app db-worker ... && pnpm webpack-app-build`, then rsync `static/ → public/`) and publishes `public/` to GitHub Pages.
+- Research behind this work: `docs/pwa-research/` (architecture, PWA baseline, offline/storage, cross-platform, sync, licensing, and the consolidated `REPORT-logseq-web-pwa.md`).

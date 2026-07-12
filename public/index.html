@@ -8,6 +8,8 @@
   </script>
   <meta content="minimum-scale=1, initial-scale=1, maximum-scale=1, width=device-width, shrink-to-fit=no" name="viewport">
   <link href="/static/css/style.css" rel="stylesheet" type="text/css">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <meta name="theme-color" content="#ffffff">
   <link href="/static/img/logo.png" rel="shortcut icon" type="image/png">
   <link href="/static/img/logo.png" rel="shortcut icon" sizes="192x192">
   <link href="/static/img/logo.png" rel="apple-touch-icon">
@@ -65,5 +67,14 @@
 <script defer src="/static/js/tabler-icons-react.min.js"></script>
 <script defer src="/static/js/tabler.ext.js"></script>
 <script defer src="/static/js/code-editor.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function (err) {
+        console.warn('[PWA] service worker registration failed:', err);
+      });
+    });
+  }
+</script>
 </body>
 </html>
