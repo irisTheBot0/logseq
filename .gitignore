@@ -61,7 +61,14 @@ startup.png
 android/app/src/main/assets/capacitor.config.json
 
 *.sublime-*
+# /public is the built web output dir, but we author PWA source there.
+# Ignore generated build artifacts, keep authored PWA files tracked.
 /public
+!/public/manifest.webmanifest
+!/public/sw.js
+!/public/404.html
+!/public/icons/
+!/public/icons/**
 .pnpm-store/
 
 deps/shui/.lsp
