@@ -8,6 +8,10 @@ const path = require('path');
 const htmlPath = path.join(__dirname, '..', 'public', 'index.html');
 let html = fs.readFileSync(htmlPath, 'utf8');
 
+// Rewrite any /static/ asset paths to root-relative (GitHub Pages silently
+// drops files under a `static/` directory, so assets are published at /js,/css,/img).
+html = html.replace(/(href|src)="\/static\//g, '$1="/');
+
 // 1) manifest link (idempotent)
 if (!html.includes('rel="manifest"')) {
   html = html.replace(
@@ -41,4 +45,4 @@ if (!html.includes('serviceWorker.register')) {
 }
 
 fs.writeFileSync(htmlPath, html, 'utf8');
-console.log('[inject-pwa] updated public/index.html with manifest + theme-color + SW registration');
+console.log('[inject-pwa] updated public/index.html (asset paths + manifest + theme-color + SW)');
