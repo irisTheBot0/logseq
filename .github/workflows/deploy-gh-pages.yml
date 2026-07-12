@@ -56,27 +56,21 @@ jobs:
           clojure -M:cljs release app db-worker \
             --config-merge '{:compiler-options {:source-map true :source-map-include-sources-content true :source-map-detail-level :symbols}}'
           pnpm webpack-app-build
-          # Copy built static assets into public/static/ so they serve at /static/js, /static/css, etc.
-          # (shadow-cljs :app uses :asset-path "/static/js", matching our public/index.html).
-          # Exclude static/index.html (it ships ./-relative paths); we keep our own public/index.html.
-          mkdir -p ./public/static
+          # Publish built assets at the site ROOT (GitHub Pages silently drops
+          # files under a `static/` directory, so we must NOT nest them there).
+          # static/index.html uses ./js,./css relative paths that resolve at root.
           rsync -avz \
             --exclude node_modules \
             --exclude android \
             --exclude ios \
             --exclude mobile \
-            --exclude index.html \
-            ./static/ ./public/static/
-          rm -f ./public/static/js/*.map
+            ./static/ ./public/
+          rm -f ./public/js/*.map
         env:
           LOGSEQ_POSTHOG_TOKEN: ${{ secrets.LOGSEQ_POSTHOG_TOKEN }}
 
       - name: Inject PWA tags into built index.html
-        run: |
-          # The build copies static/index.html (./-relative paths) over our
-          # public/index.html (/static/-absolute paths). Restore ours, then inject.
-          git restore -- public/index.html
-          node scripts/inject-pwa.js
+        run: node scripts/inject-pwa.js
 
       - name: Add SPA fallback (404.html → shell)
         run: cp ./public/index.html ./public/404.html
